@@ -23,10 +23,12 @@ abstract class Bank {
     protected WebClient client
     protected MarkupBuilder xml
     private HtmlPage currentPage
-    private Logger log = Logger.getLogger(Bank.class)
+    private StringWriter writer
+    protected Logger log = Logger.getLogger(Bank.class)
     String folder
 
     protected Bank(BrowserVersion version, String targetFolder) {
+        log.debug("creating webclient...")
         this.folder = targetFolder
         client = new WebClient(version)
         client.throwExceptionOnScriptError = false
@@ -34,10 +36,13 @@ abstract class Bank {
             void notify(String message, Object origin) {}
         })
         client.setCssErrorHandler(new SilentCssErrorHandler())
-        xml = new MarkupBuilder(new StringWriter())
+        writer = new StringWriter()
+        xml = new MarkupBuilder(writer)
+        log.debug("...webclient created.")
     }
 
     protected void resolve(String url) {
+        log.debug("resolving url ${url}...")
         try {
             currentPage = client.getPage(url)
             if (currentPage)
@@ -50,9 +55,11 @@ abstract class Bank {
             log.fatal("Url ${url} could not be resolved.")
             System.exit(1)
         }
+        log.debug("...resolved")
     }
 
     protected void consoleInputByName(String consoleText, String name) {
+        log.debug("requesting input...")
         def value
         if (System.console())
             value = System.console().readLine(consoleText)
@@ -61,9 +68,11 @@ abstract class Bank {
             value = System.in.newReader().readLine()
         }
         getElementByName(name).valueAttribute = value
+        log.debug("...input set")
     }
 
     protected void passwordInputByName(String consoleText, String name) {
+        log.debug("requesting password...")
         def password
         if (System.console())
             password = System.console().readPassword(consoleText)
@@ -72,19 +81,78 @@ abstract class Bank {
             password = System.in.newReader().readLine()
         }
         getElementByName(name).valueAttribute = password
+        log.debug("...password set")
+    }
+
+    protected void eachOptionOfSelectByName(String name, Closure closure) {
+        log.debug("iteration options...")
+        def tempPage = currentPage
+        getElementByName(name).getHtmlElementsByTagName('option').each { option ->
+            log.debug("...option ${option.text}...")
+            option.selected = true
+            closure.call(option.text)
+        }
+        currentPage = tempPage
+        log.debug("...iteration complete")
+    }
+
+    protected void setRadioButtonByName(String name, String value) {
+        log.debug("setting radio button...")
+        def set = false
+        getElementsByName(name).each { radio ->
+            if (radio.valueAttribute == value) {
+                radio.checked = true
+                set = true
+            }
+        }
+        log.debug("...radiobutton ${(set?"":"NOT ")}set")
+    }
+
+    protected void setValueByName(String name, String value) {
+        log.debug("setting value...")
+        getElementByName(name).valueAttribute = value
+        log.debug("...value set")
     }
 
     protected void clickOnId(String id) {
+        log.debug("clicking id...")
         currentPage = getElementById(id).click()
+        log.debug("...clicked")
     }
 
     protected void clickOnAnchor(String href) {
+        log.debug("clicking anchor...")
         currentPage = getAnchorByHref(href).click()
+        log.debug("...clicked")
+    }
+
+    protected String loadDocumentOnAnchor(String href) {
+        log.debug("clicking anchor...")
+        def page = getAnchorByHref(href).click()
+        log.debug("...clicked")
+        page.content
     }
 
     private HtmlElement getElementByName(String name) {
         try {
             return currentPage.getElementByName(name)
+        } catch (Throwable t) {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(t)
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+
+    private HtmlElement[] getElementsByName(String name) {
+        try {
+            return currentPage.getElementsByName(name)
         } catch (Throwable t) {
             def i = 0
             def file = new File("${folder}currentPage${i++}.html")
@@ -133,8 +201,21 @@ abstract class Bank {
         }
     }
 
-    abstract String exec()
+    protected void save() {
+        def i = 0
+        def file = new File("${folder}currentPage${i++}.html")
+        while (file.exists()) {
+            file = new File("${folder}currentPage${i++}.html")
+        }
+        log.info("Writing file to ${file.name}")
+        currentPage.save(file)
+        log.info("Exiting...")
+    }
 
-    abstract String buildXml()
+    protected String getXmlResult() {
+        writer.toString()
+    }
+
+    abstract String exec()
 
 }
