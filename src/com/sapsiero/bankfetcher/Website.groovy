@@ -5,7 +5,7 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
 import com.gargoylesoftware.htmlunit.IncorrectnessListener
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler
 import groovy.xml.MarkupBuilder
-import com.gargoylesoftware.htmlunit.Page
+
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import org.apache.log4j.Logger
 import com.gargoylesoftware.htmlunit.html.HtmlElement
@@ -18,27 +18,31 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor
  * Time: 9:53 PM
  * To change this template use File | Settings | File Templates.
  */
-abstract class Bank {
+abstract class Website {
 
     protected WebClient client
+    private BrowserVersion version
     protected MarkupBuilder xml
     private HtmlPage currentPage
-    private StringWriter writer
-    protected Logger log = Logger.getLogger(Bank.class)
+    protected Logger log = Logger.getLogger(Website.class)
     String folder
 
-    protected Bank(BrowserVersion version, String targetFolder) {
+    protected Website(BrowserVersion version, String targetFolder) {
         log.debug("creating webclient...")
         this.folder = targetFolder
+        this.version = version
+        log.debug("...webclient created.")
+    }
+
+    protected void init() {
+        log.debug("initialising webclient...")
         client = new WebClient(version)
         client.throwExceptionOnScriptError = false
         client.setIncorrectnessListener(new IncorrectnessListener(){
             void notify(String message, Object origin) {}
         })
         client.setCssErrorHandler(new SilentCssErrorHandler())
-        writer = new StringWriter()
-        xml = new MarkupBuilder(writer)
-        log.debug("...webclient created.")
+        log.debug("...initialised.")
     }
 
     protected void resolve(String url) {
@@ -96,6 +100,17 @@ abstract class Bank {
         log.debug("...iteration complete")
     }
 
+    protected void eachElementByName(String name, Closure closure) {
+        log.debug("iteration elements...")
+        def tempPage = currentPage
+        getElementsByName(name).eachWithIndex { element, i ->
+            log.debug("...element ${i}...")
+            closure.call(element)
+        }
+        currentPage = tempPage
+        log.debug("...iteration complete")
+    }
+
     protected void setRadioButtonByName(String name, String value) {
         log.debug("setting radio button...")
         def set = false
@@ -111,6 +126,12 @@ abstract class Bank {
     protected void setValueByName(String name, String value) {
         log.debug("setting value...")
         getElementByName(name).valueAttribute = value
+        log.debug("...value set")
+    }
+
+    protected void setSelectedByName(String name, String attribute, boolean value) {
+        log.debug("setting value...")
+        getElementByName(name).setSelectedAttribute(attribute, value)
         log.debug("...value set")
     }
 
@@ -133,7 +154,7 @@ abstract class Bank {
         page.content
     }
 
-    private HtmlElement getElementByName(String name) {
+    protected HtmlElement getElementByName(String name) {
         try {
             return currentPage.getElementByName(name)
         } catch (Throwable t) {
@@ -150,7 +171,7 @@ abstract class Bank {
         }
     }
 
-    private HtmlElement[] getElementsByName(String name) {
+    protected HtmlElement[] getElementsByName(String name) {
         try {
             return currentPage.getElementsByName(name)
         } catch (Throwable t) {
@@ -167,7 +188,7 @@ abstract class Bank {
         }
     }
 
-    private HtmlElement getElementById(String id) {
+    protected HtmlElement getElementById(String id) {
         try {
             return currentPage.getElementById(id)
         } catch (Throwable t) {
@@ -184,7 +205,7 @@ abstract class Bank {
         }
     }
 
-    private HtmlAnchor getAnchorByHref(String href) {
+    protected HtmlAnchor getAnchorByHref(String href) {
         try {
             return currentPage.getAnchorByHref(href)
         } catch (Throwable t) {
@@ -212,10 +233,14 @@ abstract class Bank {
         log.info("Exiting...")
     }
 
-    protected String getXmlResult() {
-        writer.toString()
+    protected void setJsEnabled(boolean enabled) {
+        client.setJavaScriptEnabled(enabled)
     }
 
-    abstract String exec()
+    public enum DocType {
+        HTML, XML, TEXT, PDF
+    }
+
+    abstract void eachDocument(Closure closure)
 
 }
