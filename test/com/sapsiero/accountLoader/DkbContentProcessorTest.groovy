@@ -1,8 +1,8 @@
-package com.sapsiero.bankfetcher
+package com.sapsiero.accountLoader
 
 import org.junit.Test
 import static org.junit.Assert.*
-import com.sapsiero.bankfetcher.mock.MockDkbWebsite
+import com.sapsiero.accountLoader.mock.MockDkbWebsite
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,6 +46,28 @@ class DkbContentProcessorTest {
             assertTrue(docType == Website.DocType.XML)
             assertEquals(doc, mockWebsite.result3)
             assertEquals(docAttr.bank, "BYLADEM1001")
+        }
+    }
+
+    @Test public void creditWithInternationalTest () {
+        def mockWebsite = new MockDkbWebsite(showCreditWithInternational: true)
+
+        def processor = new DkbContentProcessor(mockWebsite)
+
+        processor.process { docType, docAttr, doc ->
+            assertTrue(docType == Website.DocType.XML)
+            assertEquals(doc, mockWebsite.result4)
+            assertEquals(docAttr.bank, "BYLADEM1001")
+        }
+    }
+
+    @Test(expected=ContentProcessException)
+    public void creditWithInternationalErrorTest () {
+        def mockWebsite = new MockDkbWebsite(showCreditWithInternationalError: true)
+
+        def processor = new DkbContentProcessor(mockWebsite)
+
+        processor.process { docType, docAttr, doc ->
         }
     }
 }

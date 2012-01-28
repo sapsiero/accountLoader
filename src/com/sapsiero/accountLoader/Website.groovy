@@ -1,4 +1,4 @@
-package com.sapsiero.bankfetcher
+package com.sapsiero.accountLoader
 
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.BrowserVersion
@@ -111,6 +111,17 @@ abstract class Website {
         log.debug("...iteration complete")
     }
 
+    protected void eachElementByTag(String tag, Closure closure) {
+        log.debug("iteration elements...")
+        def tempPage = currentPage
+        getElementsByTag(tag).eachWithIndex { element, i ->
+            log.debug("...element ${i}...")
+            closure.call(element)
+        }
+        currentPage = tempPage
+        log.debug("...iteration complete")
+    }
+
     protected void setRadioButtonByName(String name, String value) {
         log.debug("setting radio button...")
         def set = false
@@ -157,6 +168,40 @@ abstract class Website {
     protected HtmlElement getElementByName(String name) {
         try {
             return currentPage.getElementByName(name)
+        } catch (Throwable t) {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(t)
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+
+    protected HtmlElement getElementByTag(String tag) {
+        try {
+            return currentPage.getElementsByTagName(tag)[0]
+        } catch (Throwable t) {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(t)
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+
+    protected HtmlElement[] getElementsByTag(String tag) {
+        try {
+            return currentPage.getElementsByTagName(tag)
         } catch (Throwable t) {
             def i = 0
             def file = new File("${folder}currentPage${i++}.html")

@@ -1,4 +1,4 @@
-package com.sapsiero.bankfetcher
+package com.sapsiero.accountLoader
 
 import groovy.xml.MarkupBuilder
 import java.text.NumberFormat
@@ -10,7 +10,7 @@ import java.text.NumberFormat
  * Time: 12:19 PM
  * To change this template use File | Settings | File Templates.
  */
-class DkbContentProcessor {
+class DkbContentProcessor implements ContentProcessor {
 
     private Website site
     private StringWriter writer
@@ -38,7 +38,7 @@ class DkbContentProcessor {
                 }
             }
         }
-        closure.call(Website.DocType.XML, [bank: "BYLADEM1001"], writer.toString())
+        closure.call(Website.DocType.XML, [name: "dkb", bank: "BYLADEM1001"], writer.toString())
     }
 
     private void processText(def docAttr, def doc) {
@@ -141,7 +141,7 @@ class DkbContentProcessor {
             }
 
             if (feeTracker.size() != 0)
-                throw new Exception("Could not attach all fees: ${feeTracker}")
+                throw new ContentProcessException("Could not attach all fees: ${feeTracker}")
         }
     }
 

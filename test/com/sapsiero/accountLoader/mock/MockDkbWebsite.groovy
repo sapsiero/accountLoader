@@ -1,7 +1,7 @@
-package com.sapsiero.bankfetcher.mock
+package com.sapsiero.accountLoader.mock
 
 import com.gargoylesoftware.htmlunit.BrowserVersion
-import com.sapsiero.bankfetcher.Website
+import com.sapsiero.accountLoader.Website
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,6 +59,34 @@ class MockDkbWebsite extends Website {
   </account>
 </accounts>"""
 
+    public def result4 = """<accounts banknumber='BYLADEM1001'>
+  <account number='DEFGHIJKL' type='Credit' currency='EUR'>
+    <balance date='2012-01-28' value='0.0' />
+    <transaction bookingdate='2012-01-02' tradedate='2011-12-31' message='BOOK' value='-27.60' currency='USD' fee='-0.37' accountvalue='-21.74' />
+    <transaction bookingdate='2011-12-29' tradedate='2011-12-28' message='JKL' value='-207.60' currency='EUR' fee='0.0' accountvalue='-207.60' />
+    <transaction bookingdate='2011-12-29' tradedate='2011-12-28' message='JKL' value='-20.00' currency='EUR' fee='0.0' accountvalue='-20.00' />
+    <transaction bookingdate='2011-12-23' tradedate='2011-12-22' message='Lastschrift' value='663.49' currency='EUR' fee='0.0' accountvalue='663.49' />
+    <transaction bookingdate='2011-12-19' tradedate='2011-12-17' message='BANK ABC' value='-200.00' currency='EUR' fee='0.0' accountvalue='-200.00' />
+    <transaction bookingdate='2011-12-19' tradedate='2011-12-18' message='BANK ABC' value='-200.00' currency='EUR' fee='0.0' accountvalue='-200.00' />
+    <transaction bookingdate='2011-12-12' tradedate='2011-12-09' message='BANK GHI' value='-200.00' currency='EUR' fee='0.0' accountvalue='-200.00' />
+    <transaction bookingdate='2011-11-28' tradedate='2011-11-25' message='CINEMA' value='-17.60' currency='EUR' fee='0.0' accountvalue='-17.60' />
+    <transaction bookingdate='2011-11-28' tradedate='2011-11-26' message='BOOKSTORE' value='-28.17' currency='USD' fee='-0.37' accountvalue='-21.68' />
+    <transaction bookingdate='2011-11-23' tradedate='2011-11-22' message='Lastschrift' value='322.30' currency='EUR' fee='0.0' accountvalue='322.30' />
+    <transaction bookingdate='2011-11-23' tradedate='2011-11-22' message='Interest' value='86.52' currency='EUR' fee='0.0' accountvalue='86.52' />
+    <transaction bookingdate='2011-11-23' tradedate='2011-11-22' message='TAX' value='-21.15' currency='EUR' fee='0.0' accountvalue='-21.15' />
+    <transaction bookingdate='2011-11-23' tradedate='2011-11-22' message='TAX' value='-1.16' currency='EUR' fee='0.0' accountvalue='-1.16' />
+    <transaction bookingdate='2011-11-23' tradedate='2011-11-22' message='TAX' value='-1.90' currency='EUR' fee='0.0' accountvalue='-1.90' />
+    <transaction bookingdate='2011-11-22' tradedate='2011-11-21' message='SHOPPING' value='-11.50' currency='CHF' fee='-0.16' accountvalue='-9.47' />
+    <transaction bookingdate='2011-11-22' tradedate='2011-11-21' message='BANK DEF' value='-165.36' currency='EUR' fee='0.0' accountvalue='-165.36' />
+    <transaction bookingdate='2011-11-21' tradedate='2011-11-20' message='ABCDS' value='-3.99' currency='EUR' fee='0.0' accountvalue='-3.99' />
+    <transaction bookingdate='2011-11-21' tradedate='2011-11-20' message='BANK ABC' value='-230.00' currency='EUR' fee='0.0' accountvalue='-230.00' />
+    <transaction bookingdate='2011-11-17' tradedate='2011-11-17' message='Auszahlung' value='-7669.84' currency='EUR' fee='0.0' accountvalue='-7669.84' />
+    <transaction bookingdate='2011-11-11' tradedate='2011-11-10' message='BANK ABC' value='-200.00' currency='EUR' fee='0.0' accountvalue='-200.00' />
+    <transaction bookingdate='2011-11-03' tradedate='2011-11-02' message='BANK ABC' value='-200.00' currency='EUR' fee='0.0' accountvalue='-200.00' />
+    <transaction bookingdate='2011-11-02' tradedate='2011-11-01' message='ABCDS' value='-2.06' currency='EUR' fee='0.0' accountvalue='-2.06' />
+  </account>
+</accounts>"""
+
     private def content1 = """"Kontonummer:";"1234567890 / Internet-Konto";
 
 "Von:";"29.12.2011";
@@ -87,8 +115,80 @@ class MockDkbWebsite extends Website {
 "Umsatz abgerechnet";"Wertstellung";"Belegdatum";"Umsatzbeschreibung";"Betrag (EUR)";"Ursprünglicher Betrag";
 "Nein";"21.01.2012";"20.01.2012";"Lastschrift";"2.207,09";"";"""
 
+    private def content3 =""""Kreditkarte:";"1234********5678 Kreditkarte";
+
+"Von:";"01.11.2011";
+"Bis:";"31.12.2011";
+"Saldo:";"0 EUR";
+"Datum:";"26.01.2012";
+
+"Umsatz abgerechnet";"Wertstellung";"Belegdatum";"Umsatzbeschreibung";"Betrag (EUR)";"Ursprünglicher Betrag";
+"Ja";"02.01.2012";"31.12.2011";"BOOK";"-21,37";"-27,60 USD";
+"Ja";"02.01.2012";"31.12.2011";"1,75% für Auslandseinsatz";"-0,37";"";
+"Ja";"29.12.2011";"28.12.2011";"JKL";"-207,60";"";
+"Ja";"29.12.2011";"28.12.2011";"JKL";"-20,00";"";
+"Ja";"23.12.2011";"22.12.2011";"Lastschrift";"663,49";"";
+"Ja";"19.12.2011";"17.12.2011";"BANK ABC";"-200,00";"";
+"Ja";"19.12.2011";"18.12.2011";"BANK ABC";"-200,00";"";
+"Ja";"12.12.2011";"09.12.2011";"BANK GHI";"-200,00";"";
+"Ja";"28.11.2011";"25.11.2011";"CINEMA";"-17,60";"";
+"Ja";"28.11.2011";"26.11.2011";"BOOKSTORE";"-21,31";"-28,17 USD";
+"Ja";"28.11.2011";"26.11.2011";"1,75% für Auslandseinsatz";"-0,37";"";
+"Ja";"23.11.2011";"22.11.2011";"Lastschrift";"322,30";"";
+"Ja";"23.11.2011";"22.11.2011";"Interest";"86,52";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-21,15";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-1,16";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-1,90";"";
+"Ja";"22.11.2011";"21.11.2011";"SHOPPING";"-9,31";"-11,50 CHF";
+"Ja";"22.11.2011";"21.11.2011";"BANK DEF";"-165,36";"";
+"Ja";"22.11.2011";"21.11.2011";"1,75% für Auslandseinsatz";"-0,16";"";
+"Ja";"21.11.2011";"20.11.2011";"ABCDS";"-3,99";"";
+"Ja";"21.11.2011";"20.11.2011";"BANK ABC";"-230,00";"";
+"Ja";"17.11.2011";"17.11.2011";"Auszahlung";"-7.669,84";"";
+"Ja";"11.11.2011";"10.11.2011";"BANK ABC";"-200,00";"";
+"Ja";"03.11.2011";"02.11.2011";"BANK ABC";"-200,00";"";
+"Ja";"02.11.2011";"01.11.2011";"ABCDS";"-2,06";"";"""
+
+    private def content4 =""""Kreditkarte:";"1234********5678 Kreditkarte";
+
+"Von:";"01.11.2011";
+"Bis:";"31.12.2011";
+"Saldo:";"0 EUR";
+"Datum:";"26.01.2012";
+
+"Umsatz abgerechnet";"Wertstellung";"Belegdatum";"Umsatzbeschreibung";"Betrag (EUR)";"Ursprünglicher Betrag";
+"Ja";"02.01.2012";"31.12.2011";"BOOK";"-21,37";"-27,60 USD";
+"Ja";"02.01.2012";"31.12.2011";"1,75% für Auslandseinsatz";"-0,37";"";
+"Ja";"29.12.2011";"28.12.2011";"JKL";"-207,60";"";
+"Ja";"29.12.2011";"28.12.2011";"JKL";"-20,00";"";
+"Ja";"23.12.2011";"22.12.2011";"Lastschrift";"663,49";"";
+"Ja";"19.12.2011";"17.12.2011";"BANK ABC";"-200,00";"";
+"Ja";"19.12.2011";"18.12.2011";"BANK ABC";"-200,00";"";
+"Ja";"12.12.2011";"09.12.2011";"BANK GHI";"-200,00";"";
+"Ja";"28.11.2011";"25.11.2011";"CINEMA";"-17,60";"";
+"Ja";"28.11.2011";"26.11.2011";"BOOKSTORE";"-21,31";"-28,17 USD";
+"Ja";"28.11.2011";"26.11.2011";"1,75% für Auslandseinsatz";"-0,37";"";
+"Ja";"23.11.2011";"22.11.2011";"Lastschrift";"322,30";"";
+"Ja";"23.11.2011";"22.11.2011";"Interest";"86,52";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-21,15";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-1,16";"";
+"Ja";"23.11.2011";"22.11.2011";"TAX";"-1,90";"";
+"Ja";"22.11.2011";"21.11.2011";"SHOPPING";"-9,31";"-11,50 CHF";
+"Ja";"22.11.2011";"21.11.2011";"BANK DEF";"-165,36";"";
+"Ja";"22.11.2011";"21.11.2011";"1,75% für Auslandseinsatz";"-1,16";"";
+"Ja";"21.11.2011";"20.11.2011";"ABCDS";"-3,99";"";
+"Ja";"21.11.2011";"20.11.2011";"BANK ABC";"-230,00";"";
+"Ja";"17.11.2011";"17.11.2011";"Auszahlung";"-7.669,84";"";
+"Ja";"11.11.2011";"10.11.2011";"BANK ABC";"-200,00";"";
+"Ja";"03.11.2011";"02.11.2011";"BANK ABC";"-200,00";"";
+"Ja";"02.11.2011";"01.11.2011";"ABCDS";"-2,06";"";"""
+
+
+
     def showDebit = false
     def showCredit = false
+    def showCreditWithInternational = false
+    def showCreditWithInternationalError = false
 
     @Override
     void eachDocument(Closure closure) {
@@ -96,5 +196,9 @@ class MockDkbWebsite extends Website {
             closure.call(Website.DocType.TEXT, [type: 'debit', account: 'ABCDEFGHI'], content1)
         if (showCredit)
             closure.call(Website.DocType.TEXT, [type: 'credit', account: 'DEFGHIJKL'], content2)
+        if (showCreditWithInternational)
+            closure.call(Website.DocType.TEXT, [type: 'credit', account: 'DEFGHIJKL'], content3)
+        if (showCreditWithInternationalError)
+            closure.call(Website.DocType.TEXT, [type: 'credit', account: 'DEFGHIJKL'], content4)
     }
 }

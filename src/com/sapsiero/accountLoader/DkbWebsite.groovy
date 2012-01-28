@@ -1,4 +1,4 @@
-package com.sapsiero.bankfetcher
+package com.sapsiero.accountLoader
 
 import com.gargoylesoftware.htmlunit.BrowserVersion
 
@@ -11,8 +11,9 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
  */
 class DkbWebsite extends Website {
 
-    public DkbWebsite() {
-        super(BrowserVersion.FIREFOX_3, "/home/tim/Documents/Website/Dkb/${new Date().format('yyyyMMdd')}/")
+    public DkbWebsite(String errorFolder) {
+        super(BrowserVersion.FIREFOX_3, errorFolder)
+        init()
         client.javaScriptEnabled = false
     }
 
@@ -35,7 +36,7 @@ class DkbWebsite extends Website {
             clickOnId("searchbutton")
 
             def content = loadDocumentOnAnchor("/dkb/-?\$part=DkbTransactionBanking.content.banking.Transactions.Search&\$event=csvExport")
-            closure.call(DocType.TEXT, [type: 'debit', account: (optionText =~ /[0-9]+/)[0]], content)
+            closure.call(Website.DocType.TEXT, [type: 'debit', account: (optionText =~ /[0-9]+/)[0]], content)
         }
 
         clickOnAnchor('/dkb/-?$part=DkbTransactionBanking.index.menu&node=2.1&tree=menu&treeAction=selectNode')
@@ -47,51 +48,50 @@ class DkbWebsite extends Website {
             clickOnId("searchbutton")
 
             def content = loadDocumentOnAnchor("/dkb/-?\$part=DkbTransactionBanking.content.creditcard.CreditcardTransactionSearch&\$event=csvExport")
-            closure.call(DocType.TEXT, [type: 'credit', account: (optionText =~ /[0-9\*]+/)[0]], content)
+            closure.call(Website.DocType.TEXT, [type: 'credit', account: (optionText =~ /[0-9\*]+/)[0]], content)
         }
 
         jsEnabled = true
         clickOnAnchor('/dkb/-?$part=Postbox')
-        
-        save()
 
         def map = ['Konto' : '1', 'Kredit' : '2']
         map.keySet().each { typ ->
-            eachElementByName("strong") { strongElements ->
+            eachElementByTag("strong") { strongElements ->
+                log.info(strongElements)
                 setSelectedByName("slEsafeFolders", map[typ], true)
 
                 strongElements.getElementsByTagName('a').each { pdf ->
                     if (pdf.textContent.contains(typ)) {
                         pdf.getEnclosingElement('tr').getHtmlElementsByTagName('input')[0].checked = true
                         def document = pdf.click()
-                        closure.call(DocType.PDF, [name: pdf.textContent.trim()], document)
+                        closure.call(Website.DocType.PDF, [name: pdf.textContent.trim()], document.inputStream)
                     }
 
                     jsEnabled = false
-                    getElementByName("body").getOneHtmlElementByAttribute('input', 'title', '''In die 'Dokumentenmappe' kopieren''').click()
+                    getElementByTag("body").getOneHtmlElementByAttribute('input', 'title', '''In die 'Dokumentenmappe' kopieren''').click()
                     jsEnabled = true
                 }
             }
         }
 
-        clickOnAnchor('/dkb/-?$part=Postbox.index.menu&treeAction=selectNode&node=1&tree=menu')
+        clickOnAnchor('/dkb/-?$part=Postbox.index.menu&node=1&tree=menu&treeAction=selectNode')
 
-        eachElementByName("strong") { strongElements ->
+        eachElementByTag("strong") { strongElements ->
             setSelectedByName("slEsafeFolders", "0", true)
 
             strongElements.getElementsByTagName('a').each { pdf ->
                 if (pdf.textContent.contains(typ)) {
                     pdf.getEnclosingElement('tr').getHtmlElementsByTagName('input')[0].checked = true
                     def document = pdf.click()
-                    closure.call(DocType.PDF, [name: pdf.textContent.trim()], document.inputStream)
+                    closure.call(Website.DocType.PDF, [name: pdf.textContent.trim()], document.inputStream)
                 }
 
                 jsEnabled = false
-                getElementByName("body").getOneHtmlElementByAttribute('input', 'title', '''In die 'Dokumentenmappe' kopieren''').click()
+                getElementByTag("body").getOneHtmlElementByAttribute('input', 'title', '''In die 'Dokumentenmappe' kopieren''').click()
                 jsEnabled = true
             }
         }
 
-        //TODO add logout
+        clickOnAnchor('/dkb/-?$part=Postbox.login-status&$event=logout')
     }
 }
