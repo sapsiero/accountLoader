@@ -186,7 +186,7 @@ abstract class Website {
         def clicked = false
         def tmpPage
         currentPage.getElementsByTagName('a').each() { child ->
-            if (child.asXml().contains(content))  {
+            if (!clicked && child.asXml().contains(content))  {
                 tmpPage = child.click()
                 clicked = true
             }

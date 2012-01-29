@@ -27,7 +27,7 @@ class CommerzbankContentProcessor implements ContentProcessor {
         xml.accounts(banknumber: 'COBADEFF') {
             site.eachDocument { docType, docAttr, doc ->
                 switch (docType) {
-                    case Website.DocType.XML:
+                    case Website.DocType.TEXT:
                         processText(docAttr, doc)
                         break
                     case Website.DocType.PDF:

@@ -14,8 +14,14 @@ log.info "Provided the following args: ${args}"
 //file.ensureFolder()
 //file.fetch(processor)
 
-def site = new CommerzbankWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
-def processor = new CommerzbankContentProcessor(site)
+//def site = new CommerzbankWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
+//def processor = new CommerzbankContentProcessor(site)
+//def file = new ContentWriter("/home/tim/Documents/Bank/new")
+//file.ensureFolder()
+//file.fetch(processor)
+
+def site = new ConsorsWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
+def processor = new ConsorsContentProcessor(site)
 def file = new ContentWriter("/home/tim/Documents/Bank/new")
 file.ensureFolder()
 file.fetch(processor)
