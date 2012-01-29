@@ -10,6 +10,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import org.apache.log4j.Logger
 import com.gargoylesoftware.htmlunit.html.HtmlElement
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor
+import com.gargoylesoftware.htmlunit.ElementNotFoundException
 
 /**
  * Created by IntelliJ IDEA.
@@ -122,6 +123,17 @@ abstract class Website {
         log.debug("...iteration complete")
     }
 
+    protected void eachElementByXPath(String path, Closure closure) {
+        log.debug("iteration elements...")
+        def tempPage = currentPage
+        getElementsByXPath(path).eachWithIndex { element, i ->
+            log.debug("...element ${i}...")
+            closure.call(element)
+        }
+        currentPage = tempPage
+        log.debug("...iteration complete")
+    }
+
     protected void setRadioButtonByName(String name, String value) {
         log.debug("setting radio button...")
         def set = false
@@ -152,10 +164,47 @@ abstract class Website {
         log.debug("...clicked")
     }
 
+    protected void clickOnName(String name) {
+        log.debug("clicking anchor...")
+        currentPage = getElementByName(name).click()
+        log.debug("...clicked")
+    }
+
     protected void clickOnAnchor(String href) {
         log.debug("clicking anchor...")
         currentPage = getAnchorByHref(href).click()
         log.debug("...clicked")
+    }
+    
+    protected void clickOnXPath(String path) {
+        log.debug("clicking xpath...")
+        currentPage = getElementByXPath(path).click()
+        log.debug("...clicked")
+    }
+
+    protected void clickOnAnchorContaining(String content) {
+        def clicked = false
+        def tmpPage
+        currentPage.getElementsByTagName('a').each() { child ->
+            if (child.asXml().contains(content))  {
+                tmpPage = child.click()
+                clicked = true
+            }
+        }
+        if (clicked) {
+            currentPage = tmpPage
+        } else {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(new ElementNotFoundException("a", "content", "*${content}*"))
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
     }
 
     protected String loadDocumentOnAnchor(String href) {
@@ -236,6 +285,40 @@ abstract class Website {
     protected HtmlElement getElementById(String id) {
         try {
             return currentPage.getElementById(id)
+        } catch (Throwable t) {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(t)
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+    
+    protected HtmlElement getElementByXPath(String path){
+        try {
+            return currentPage.getFirstByXPath(path)
+        } catch (Throwable t) {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(t)
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+
+    protected HtmlElement[] getElementsByXPath(String path){
+        try {
+            return currentPage.getByXPath(path)
         } catch (Throwable t) {
             def i = 0
             def file = new File("${folder}currentPage${i++}.html")

@@ -20,7 +20,7 @@ class DkbContentProcessorTest {
         
         processor.process { docType, docAttr, doc ->
             assertTrue(docType == Website.DocType.XML)
-            assertEquals(doc, mockWebsite.result1)
+            assertEquals(doc, replaceDates(mockWebsite.result1))
             assertEquals(docAttr.bank, "BYLADEM1001")
         }
     }
@@ -32,7 +32,7 @@ class DkbContentProcessorTest {
 
         processor.process { docType, docAttr, doc ->
             assertTrue(docType == Website.DocType.XML)
-            assertEquals(doc, mockWebsite.result2)
+            assertEquals(doc, replaceDates(mockWebsite.result2))
             assertEquals(docAttr.bank, "BYLADEM1001")
         }
     }
@@ -44,7 +44,7 @@ class DkbContentProcessorTest {
 
         processor.process { docType, docAttr, doc ->
             assertTrue(docType == Website.DocType.XML)
-            assertEquals(doc, mockWebsite.result3)
+            assertEquals(doc, replaceDates(mockWebsite.result3))
             assertEquals(docAttr.bank, "BYLADEM1001")
         }
     }
@@ -56,7 +56,7 @@ class DkbContentProcessorTest {
 
         processor.process { docType, docAttr, doc ->
             assertTrue(docType == Website.DocType.XML)
-            assertEquals(doc, mockWebsite.result4)
+            assertEquals(doc, replaceDates(mockWebsite.result4))
             assertEquals(docAttr.bank, "BYLADEM1001")
         }
     }
@@ -69,5 +69,9 @@ class DkbContentProcessorTest {
 
         processor.process { docType, docAttr, doc ->
         }
+    }
+    
+    private String replaceDates(String doc) {
+        doc.replaceAll("2012-01-28", new Date().format("yyyy-MM-dd"))
     }
 }
