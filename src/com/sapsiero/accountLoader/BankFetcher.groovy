@@ -20,8 +20,12 @@ log.info "Provided the following args: ${args}"
 //file.ensureFolder()
 //file.fetch(processor)
 
-def site = new ConsorsWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
-def processor = new ConsorsContentProcessor(site)
-def file = new ContentWriter("/home/tim/Documents/Bank/new")
-file.ensureFolder()
-file.fetch(processor)
+//def site = new ConsorsWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
+//def processor = new ConsorsContentProcessor(site)
+//def file = new ContentWriter("/home/tim/Documents/Bank/new")
+//file.ensureFolder()
+//file.fetch(processor)
+
+def site = new ZkbWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
+site.eachDocument { docType, docAttr, doc ->
+}

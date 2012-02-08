@@ -27,6 +27,8 @@ abstract class Website {
     private HtmlPage currentPage
     protected Logger log = Logger.getLogger(Website.class)
     String folder
+    protected String pageName
+    protected Closure determinePageName
 
     protected Website(BrowserVersion version, String targetFolder) {
         log.debug("creating webclient...")
@@ -44,6 +46,12 @@ abstract class Website {
         })
         client.setCssErrorHandler(new SilentCssErrorHandler())
         log.debug("...initialised.")
+    }
+
+    protected boolean isPage(def name) {
+        pageName = determinePageName.call(currentPage)
+        log.info("Currently on page '${pageName}'")
+        name == pageName
     }
 
     protected void resolve(String url) {
@@ -183,6 +191,7 @@ abstract class Website {
     }
 
     protected void clickOnAnchorContaining(String content) {
+        log.debug("clicking anchor...")
         def clicked = false
         def tmpPage
         currentPage.getElementsByTagName('a').each() { child ->
@@ -205,6 +214,34 @@ abstract class Website {
             log.fatal("Exiting...")
             System.exit(1)
         }
+        log.debug("...clicked")
+    }
+
+    protected void clickOnInputNameContaining(String name) {
+        log.debug("clicking input...")
+        def clicked = false
+        def tmpPage
+        currentPage.getElementsByTagName('input').each() { child ->
+            if (!clicked && child.nameAttribute.contains(name))  {
+                tmpPage = child.click()
+                clicked = true
+            }
+        }
+        if (clicked) {
+            currentPage = tmpPage
+        } else {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(new ElementNotFoundException("a", "name", "*${name}*"))
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+        log.debug("...clicked")
     }
 
     protected String loadDocumentOnAnchor(String href) {
@@ -212,6 +249,31 @@ abstract class Website {
         def page = getAnchorByHref(href).click()
         log.debug("...clicked")
         page.content
+    }
+
+    protected String loadDocumentOnAnchorContaining(String content) {
+        def clicked = false
+        def tmpPage
+        currentPage.getElementsByTagName('a').each() { child ->
+            if (!clicked && child.asXml().contains(content))  {
+                tmpPage = child.click()
+                clicked = true
+            }
+        }
+        if (clicked) {
+            tmpPage.content
+        } else {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(new ElementNotFoundException("a", "content", "*${content}*"))
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
     }
 
     protected HtmlElement getElementByName(String name) {
