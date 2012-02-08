@@ -172,6 +172,22 @@ abstract class Website {
         log.debug("...clicked")
     }
 
+    protected def clickOnAnchor(String href, Closure closure) {
+        log.debug("clicking anchor...")
+        def tmpPage = currentPage
+        def checkPage = getAnchorByHref(href).click()
+        if (checkPage instanceof HtmlPage) {
+            currentPage = checkPage
+            closure.call()
+            currentPage = tmpPage
+            null
+        } else {
+            log.debug("...clicked without finding new HTMLPage")
+            log.debug("returning ${checkPage.class}")
+            checkPage
+        }
+    }
+
     protected void clickOnName(String name) {
         log.debug("clicking anchor...")
         currentPage = getElementByName(name).click()
@@ -269,6 +285,32 @@ abstract class Website {
                 file = new File("${folder}currentPage${i++}.html")
             }
             log.fatal(new ElementNotFoundException("a", "content", "*${content}*"))
+            log.fatal("Writing file to ${file.name}")
+            currentPage.save(file)
+            log.fatal("Exiting...")
+            System.exit(1)
+        }
+    }
+
+    protected String loadDocumentOnInputNameContaining(String name) {
+        log.debug("clicking input...")
+        def clicked = false
+        def tmpPage
+        currentPage.getElementsByTagName('input').each() { child ->
+            if (!clicked && child.nameAttribute.contains(name))  {
+                tmpPage = child.click()
+                clicked = true
+            }
+        }
+        if (clicked) {
+            tmpPage.content
+        } else {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.fatal(new ElementNotFoundException("a", "name", "*${name}*"))
             log.fatal("Writing file to ${file.name}")
             currentPage.save(file)
             log.fatal("Exiting...")

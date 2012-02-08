@@ -27,5 +27,7 @@ log.info "Provided the following args: ${args}"
 //file.fetch(processor)
 
 def site = new ZkbWebsite("/home/tim/Documents/Bank/Dkb/new/${new Date().format('yyyyMMdd')}/")
-site.eachDocument { docType, docAttr, doc ->
-}
+def processor = new ZkbContentProcessor(site)
+def file = new ContentWriter("/home/tim/Documents/Bank/new")
+file.ensureFolder()
+file.fetch(processor)

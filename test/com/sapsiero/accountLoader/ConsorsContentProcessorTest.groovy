@@ -52,6 +52,6 @@ class ConsorsContentProcessorTest {
     }
     
     private String replaceDates(String doc) {
-        doc.replaceAll("2012-01-28", new Date().format("yyyy-MM-dd"))
+        doc.replaceAll("2012-01-29", new Date().format("yyyy-MM-dd"))
     }
 }
