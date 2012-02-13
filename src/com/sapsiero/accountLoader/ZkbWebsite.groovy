@@ -53,19 +53,18 @@ class ZkbWebsite extends Website {
 
         closure.call(Website.DocType.TEXT, [type: 'debit', account: accountNumber], document)
 
-        eachElementByXPath('/html/body/div/div[2]/div[2]/strong/a') { anchor ->
-            clickOnAnchor(anchor.hrefAttribute)
-            
-            save()
+        ["Bankbelege"].each { docType ->
+            clickOnAnchorContaining(docType)
 
-            eachElementByXPath('/html/body/div[4]/div/form/div/table/tbody/tr') { tableRow ->
+            eachElementByXPath('/html/body/div[4]/div/form/table/tbody/tr') { tableRow ->
 
                 if (tableRow.getAttribute('class').startsWith('OnbaTableRowBgColor') && tableRow.getByXPath('td[4]')[0].asText() != "gelesen" ) {
-                    def tag = tableRow.getByXPath('td[3]/a')[0]
+
+                    def tag = tableRow.getByXPath('td[2]/a')[0]
                     def filename = tag.asText().trim().toLowerCase().replaceAll(' ', '_')
 
                     document = clickOnAnchor(tag.hrefAttribute)  {
-                        getElementsByXPath('/html/body/div[3]/div/form/table/tbody/tr') { innerTableRow ->
+                        getElementsByXPath('/html/body/div[4]/div/form/table/tbody/tr') { innerTableRow ->
                             if (innerTableRow.getAttribute('class').startsWith('OnbaTableRowBgColor')) {
                                 def tag2 = innerTableRow.getByXPath('td[1]/a') [0]
                                 def filename2 = tag2.asText().trim().toLowerCase().replaceAll(' ', '_')
@@ -78,6 +77,8 @@ class ZkbWebsite extends Website {
                     }
                     if (document)
                         closure.call(Website.DocType.PDF, [name: filename], document.inputStream)
+                    else
+                        println "Nothing returned"
                 }
 
             }

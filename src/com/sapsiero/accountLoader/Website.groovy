@@ -437,6 +437,12 @@ abstract class Website {
         }
     }
 
+    protected void getElementsByXPath(String path, Closure closure){
+        getElementByXPath(path).each { element ->
+            closure.call(element)
+        }
+    }
+
     protected HtmlAnchor getAnchorByHref(String href) {
         try {
             return currentPage.getAnchorByHref(href)

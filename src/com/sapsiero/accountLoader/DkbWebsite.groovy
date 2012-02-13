@@ -74,24 +74,6 @@ class DkbWebsite extends Website {
             }
         }
 
-        clickOnAnchor('/dkb/-?$part=Postbox.index.menu&node=1&tree=menu&treeAction=selectNode')
-
-        eachElementByTag("strong") { strongElements ->
-            setSelectedByName("slEsafeFolders", "0", true)
-
-            strongElements.getElementsByTagName('a').each { pdf ->
-                if (pdf.textContent.contains(typ)) {
-                    pdf.getEnclosingElement('tr').getHtmlElementsByTagName('input')[0].checked = true
-                    def document = pdf.click()
-                    closure.call(Website.DocType.PDF, [name: pdf.textContent.trim()], document.inputStream)
-                }
-
-                jsEnabled = false
-                getElementByTag("body").getOneHtmlElementByAttribute('input', 'title', '''In die 'Dokumentenmappe' kopieren''').click()
-                jsEnabled = true
-            }
-        }
-
         clickOnAnchor('/dkb/-?$part=Postbox.login-status&$event=logout')
     }
 }
