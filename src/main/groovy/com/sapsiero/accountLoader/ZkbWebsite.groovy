@@ -75,10 +75,11 @@ class ZkbWebsite extends Website {
                             }
                         }
                     }
-                    if (document)
+                    if (document) {
                         closure.call(Website.DocType.PDF, [name: filename], document.inputStream)
-                    else
+                    } else {
                         println "Nothing returned"
+                    }
                 }
 
             }

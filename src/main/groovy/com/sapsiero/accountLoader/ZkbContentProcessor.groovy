@@ -54,7 +54,7 @@ class ZkbContentProcessor implements ContentProcessor {
                     balance(date: new Date().format('yyyy-MM-dd'), value: toPlain(line.split(',')[8]))
                 }
 
-                if (i % 2 == 1) {
+                if (i % 2 != 0) {
                     lineBefore = line
                 } else if (i > 1) {
                     if (lineBefore =~ /^"[0-9]{2}.[0-9]{2}.[0-9]{4}".*/) {
@@ -78,8 +78,6 @@ class ZkbContentProcessor implements ContentProcessor {
                         if (m.size() == 2) {
                             if (m[1][1] == 'CHF') {
                                 fee = m[1][2]
-                            } else {
-                                //"Fee \"${m[1][2]}\" has wrong currency \"${m[1][1]}\" found."
                             }
                         }
 

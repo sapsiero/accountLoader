@@ -69,8 +69,9 @@ class ConsorsContentProcessor implements ContentProcessor {
     }
 
     private String toDouble(String value) {
-        if (value =~ /^\+/)
+        if (value =~ /^\+/) {
             value = value[1..-1]
+        }
         value = value.replace('.','')
         value = value.replace(',','.')
         String.format('%.2f', value.toDouble())

@@ -42,10 +42,11 @@ class ConsorsWebsite extends Website {
             def content = loadDocumentOnAnchor('/euroWebDe/-?$part=MonalisaDE.Desks.Accounts.Desks.CashTurnoverInq.content.main.tabFrame.cashTurnoverInq&$event=save&selectedFileFormat=csv')
 
             def accountType = ""
-            if (accountText.contains('Tagesgeldkonto'))
+            if (accountText.contains('Tagesgeldkonto')) {
                 accountType = 'callmoney'
-            else
+            } else {
                 accountType = 'debit'
+            }
 
             def accountNbr = (accountText =~ /[0-9]+/)[0]
 

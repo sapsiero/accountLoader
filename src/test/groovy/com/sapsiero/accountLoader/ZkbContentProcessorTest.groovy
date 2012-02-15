@@ -23,8 +23,6 @@ class ZkbContentProcessorTest {
         def processor = new ZkbContentProcessor(mockWebsite)
         
         processor.process() { docType, docAttr, doc ->
-            println doc
-
             assertTrue(docType == Website.DocType.XML)
 
             XMLUnit.setIgnoreWhitespace(true)
@@ -38,6 +36,6 @@ class ZkbContentProcessorTest {
     }
 
     private String replaceDates(String doc) {
-        doc.replaceAll("2012-01-29", new Date().format("yyyy-MM-dd"))
+        doc.replaceAll("2012-02-08", new Date().format("yyyy-MM-dd"))
     }
 }

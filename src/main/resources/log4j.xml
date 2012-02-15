@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
     <appender name="console" class="org.apache.log4j.ConsoleAppender">
         <param name="Target" value="System.out"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -9,11 +9,11 @@
         </layout>
     </appender>
     <logger name="com.sapsiero.accountLoader">
-        <level value="debug" />
+        <level value="debug"/>
     </logger>
     <root>
-        <priority value ="warn" />
-        <appender-ref ref="console" />
+        <priority value="warn"/>
+        <appender-ref ref="console"/>
     </root>
 
 

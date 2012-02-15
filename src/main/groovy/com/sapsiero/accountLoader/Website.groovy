@@ -21,15 +21,36 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException
  */
 abstract class Website {
 
+    /**
+     * current web client
+     */
     protected WebClient client
+    /**
+     * browser version of request
+     */
     private BrowserVersion version
-    protected MarkupBuilder xml
+    /**
+     * current page
+     */
     private HtmlPage currentPage
+    /**
+     * default logger
+     */
     protected Logger log = Logger.getLogger(Website.class)
-    String folder
-    protected String pageName
+    /**
+     * folder to store files in
+     */
+    private String folder
+    /**
+     * closure that is able to determine a unique page name of an HTML page
+     */
     protected Closure determinePageName
 
+    /**
+     * Standard constructor.
+     * @param version BrowserVersion of the request
+     * @param targetFolder Folder to store the data in
+     */
     protected Website(BrowserVersion version, String targetFolder) {
         log.debug("creating webclient...")
         this.folder = targetFolder
@@ -37,19 +58,27 @@ abstract class Website {
         log.debug("...webclient created.")
     }
 
+    /**
+     * Initialise the web client. This is initialising the underlying WebClient.
+     */
     protected void init() {
         log.debug("initialising webclient...")
         client = new WebClient(version)
         client.throwExceptionOnScriptError = false
         client.setIncorrectnessListener(new IncorrectnessListener(){
-            void notify(String message, Object origin) {}
+            public void notify(String message, Object origin) {}
         })
         client.setCssErrorHandler(new SilentCssErrorHandler())
         log.debug("...initialised.")
     }
 
+    /**
+     * checks wether a page has a particular id by using the detemerinePageName closure.
+     * @param name Checks for this page name.
+     * @return if a page name matches the given page name.
+     */
     protected boolean isPage(def name) {
-        pageName = determinePageName.call(currentPage)
+        def pageName = determinePageName.call(currentPage)
         log.info("Currently on page '${pageName}'")
         name == pageName
     }
