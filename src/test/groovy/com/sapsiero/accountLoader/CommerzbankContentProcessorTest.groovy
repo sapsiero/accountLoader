@@ -14,7 +14,7 @@ import org.custommonkey.xmlunit.Diff
  * User: tim
  * Date: 1/28/12
  * Time: 1:56 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 class CommerzbankContentProcessorTest {
 
@@ -37,6 +37,6 @@ class CommerzbankContentProcessorTest {
     }
 
     private String replaceDates(String doc) {
-        doc.replaceAll("2012-01-29", new Date().format("yyyy-MM-dd"))
+        doc.replaceAll(" date='2012-02-15'", " date='${new Date().format("yyyy-MM-dd")}'")
     }
 }

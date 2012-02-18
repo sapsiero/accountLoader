@@ -8,7 +8,7 @@ import com.sapsiero.accountLoader.Website
  * User: tim
  * Date: 1/28/12
  * Time: 2:02 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 class MockConsorsWebsite extends Website {
 

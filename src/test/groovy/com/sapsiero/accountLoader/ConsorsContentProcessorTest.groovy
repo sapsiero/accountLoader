@@ -11,7 +11,7 @@ import com.sapsiero.accountLoader.mock.MockConsorsWebsite
  * User: tim
  * Date: 1/28/12
  * Time: 1:56 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 class ConsorsContentProcessorTest {
 

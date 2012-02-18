@@ -7,7 +7,7 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
  * User: tim
  * Date: 1/25/12
  * Time: 10:02 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 class ZkbWebsite extends Website {
 

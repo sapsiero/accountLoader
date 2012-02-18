@@ -8,7 +8,7 @@ import java.text.NumberFormat
  * User: tim
  * Date: 1/28/12
  * Time: 12:19 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 class DkbContentProcessor implements ContentProcessor {
 

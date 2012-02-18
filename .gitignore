@@ -3,4 +3,4 @@ lib/
 .idea/
 out/
 *.html
-src/test/groovy/com/sapsiero/accountLoader/mock/*.xml
+src/test/resources/*.xml
