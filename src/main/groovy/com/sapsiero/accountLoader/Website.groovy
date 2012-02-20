@@ -135,11 +135,12 @@ abstract class Website {
         log.debug("requesting password...")
         def password
         if (System.console())
-            password = System.console().readPassword(consoleText)
+            password = System.console().readPassword(consoleText).toString()
         else {
             print consoleText
             password = System.in.newReader().readLine()
         }
+        println password.class
         getElementByName(name).valueAttribute = password
         log.debug("...password set")
     }
@@ -216,7 +217,7 @@ abstract class Website {
      */
     protected void setRadioButtonByName(String name, String value) throws ValueNotAvailableException {
         log.debug("setting radio button...")
-        String[] values = []
+        def values = []
         def set = false
 
         getElementsByName(name).each { radio ->
@@ -331,7 +332,7 @@ abstract class Website {
         log.debug("clicking anchor...")
         def clicked = false
         def tmpPage
-        String[] elements = []
+        def elements = []
         currentPage.getElementsByTagName('a').each() { child ->
             elements << child.asXml()
             if (!clicked && child.asXml().contains(content))  {
@@ -354,7 +355,7 @@ abstract class Website {
     protected void clickOnInputNameContaining(String name) throws ElementNotAvailableException {
         log.debug("clicking input...")
         def clicked = false
-        String[] elements = []
+        def elements = []
         currentPage.getElementsByTagName('input').each() { child ->
             if (!clicked && child.nameAttribute.contains(name))  {
                 currentPage = child.click()
@@ -389,7 +390,7 @@ abstract class Website {
             StepExecutionException {
         def clicked = false
         def tmpPage = null
-        String[] elements = []
+        def elements = []
         currentPage.getElementsByTagName('a').each() { child ->
             elements << child.asXml()
             if (!clicked && child.asXml().contains(content))  {
@@ -418,7 +419,7 @@ abstract class Website {
         log.debug("clicking input...")
         def clicked = false
         def tmpPage = null
-        String[] elements = []
+        def elements = []
         currentPage.getElementsByTagName('input').each() { child ->
             elements << child.nameAttribute
             if (!clicked && child.nameAttribute.contains(name))  {
@@ -446,7 +447,7 @@ abstract class Website {
         try {
             return currentPage.getElementsByTagName(tag)[0]
         } catch (ElementNotFoundException enf) {
-            String[] elementEntries = []
+            def elementEntries = []
             //TODO distinct tag types
             throw new ElementNotAvailableException("Element with tag type '${tag}' not found.", enf, elementEntries)
         }
@@ -462,7 +463,7 @@ abstract class Website {
         try {
             return currentPage.getElementsByTagName(tag)
         } catch (Throwable t) {
-            String[] elementEntries = []
+            def elementEntries = []
             //TODO distinct tag types
             throw new ElementNotAvailableException("Element with tag type '${tag}' not found.", enf, elementEntries)
         }
@@ -480,7 +481,7 @@ abstract class Website {
         } catch (ElementNotFoundException enf) {
             //TODO implement test
             def elements = currentPage.getElementsByTagName("*")
-            String[] elementEntries = []
+            def elementEntries = []
             elements.each { element ->
                 if (element.nameAttribute && element.nameAttribute != "") {
                     elementEntries << "<${element.tagName} name='${element.nameAttribute}' .../>"
@@ -501,7 +502,7 @@ abstract class Website {
             return currentPage.getElementsByName(name)
         } catch (Throwable t) {
             def elements = currentPage.getElementsByTagName("*")
-            String[] elementEntries = []
+            def elementEntries = []
             elements.each { element ->
                 if (element.nameAttribute && element.nameAttribute != "") {
                     elementEntries << "<${element.tagName} name='${element.nameAttribute}' .../>"
@@ -522,7 +523,7 @@ abstract class Website {
             return currentPage.getElementById(id)
         } catch (Throwable t) {
             def elements = currentPage.getElementsByTagName("*")
-            String[] elementEntries = []
+            def elementEntries = []
             elements.each { element ->
                 if (element.idAttribute && element.idAttribute != "") {
                     elementEntries << "<${element.tagName} id='${element.idAttribute}' .../>"

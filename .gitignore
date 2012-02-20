@@ -4,3 +4,4 @@ lib/
 out/
 *.html
 src/test/resources/*.xml
+target/

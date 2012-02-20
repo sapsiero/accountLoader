@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Setting classpath:"
+for lib in ./lib/*.jar
+do
+{
+	CLASSPATH=$lib:$CLASSPATH
+}
+done
+java -cp $CLASSPATH:accountLoader-0.1-SNAPSHOT.jar com.sapsiero.accountLoader.BankFetcher
