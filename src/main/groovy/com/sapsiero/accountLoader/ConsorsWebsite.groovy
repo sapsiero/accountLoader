@@ -41,7 +41,7 @@ class ConsorsWebsite extends Website {
 
             def content = loadDocumentOnAnchor('/euroWebDe/-?$part=MonalisaDE.Desks.Accounts.Desks.CashTurnoverInq.content.main.tabFrame.cashTurnoverInq&$event=save&selectedFileFormat=csv')
 
-            def accountType = ""
+            def accountType
             if (accountText.contains('Tagesgeldkonto')) {
                 accountType = 'callmoney'
             } else {

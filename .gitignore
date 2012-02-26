@@ -2,6 +2,7 @@ lib/
 *.iml
 .idea/
 out/
-*.html
+src/test/resources/*.html
 src/test/resources/*.xml
+src/test/resources/*.csv
 target/

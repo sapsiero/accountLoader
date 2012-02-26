@@ -56,8 +56,8 @@ class DkbWebsite extends Website {
 
         def map = ['Konto' : '1', 'Kredit' : '2']
         map.keySet().each { typ ->
+
             eachElementByTag("strong") { strongElements ->
-                log.info(strongElements)
                 setSelectedByName("slEsafeFolders", map[typ], true)
 
                 strongElements.getElementsByTagName('a').each { pdf ->
@@ -73,6 +73,8 @@ class DkbWebsite extends Website {
                 }
             }
         }
+
+        jsEnabled = false
 
         clickOnAnchor('/dkb/-?$part=Postbox.login-status&$event=logout')
     }

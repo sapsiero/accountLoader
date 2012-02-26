@@ -74,7 +74,6 @@ class CommerzbankContentProcessor implements ContentProcessor {
     private String toDouble(String value) {
         value = value.replace('.','')
         value = value.replace(',','.')
-        def factor = 1
         if (value.length() > 1)
             String.format('%.2f', value[0..-2].toDouble() * (value[-1] == '-'? -1 : 1))
         else

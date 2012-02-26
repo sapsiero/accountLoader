@@ -8,6 +8,7 @@ import com.sapsiero.accountLoader.mock.MockCommerzbankWebsite
 import org.custommonkey.xmlunit.XMLUnit
 import org.custommonkey.xmlunit.XMLTestCase
 import org.custommonkey.xmlunit.Diff
+import static org.junit.Assert.assertNotNull
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +28,10 @@ class CommerzbankContentProcessorTest {
             assertTrue(docType == Website.DocType.XML)
 
             XMLUnit.setIgnoreWhitespace(true)
+            
+            assertNotNull(doc)
 
+            //noinspection GroovyAssignabilityCheck
             def diff = new Diff(doc, replaceDates(mockWebsite.result))
 
             assert diff.identical()

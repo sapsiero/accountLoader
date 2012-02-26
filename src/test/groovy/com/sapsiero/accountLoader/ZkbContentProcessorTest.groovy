@@ -7,6 +7,7 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 import com.sapsiero.accountLoader.mock.MockZkbWebsite
+import static org.junit.Assert.assertNotNull
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,6 +28,9 @@ class ZkbContentProcessorTest {
 
             XMLUnit.setIgnoreWhitespace(true)
 
+            assertNotNull(doc)
+
+            //noinspection GroovyAssignabilityCheck
             def diff = new Diff(doc, replaceDates(mockWebsite.result))
 
             assert diff.identical()

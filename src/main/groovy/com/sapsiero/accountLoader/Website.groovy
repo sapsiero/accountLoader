@@ -140,7 +140,6 @@ abstract class Website {
             print consoleText
             password = System.in.newReader().readLine()
         }
-        println password.class
         getElementByName(name).valueAttribute = password
         log.debug("...password set")
     }
@@ -331,17 +330,19 @@ abstract class Website {
     protected void clickOnAnchorContaining(String content) throws ElementNotAvailableException {
         log.debug("clicking anchor...")
         def clicked = false
-        def tmpPage
+        def tmpPage = null
         def elements = []
         currentPage.getElementsByTagName('a').each() { child ->
             elements << child.asXml()
             if (!clicked && child.asXml().contains(content))  {
-                currentPage = child.click()
+                tmpPage = child.click()
                 clicked = true
             }
         }
         if (!clicked) {
             throw new ElementNotAvailableException("Anchor containing '${content}' not found.", elements)
+        } else {
+            currentPage = tmpPage
         }
         log.debug("...clicked")
     }
@@ -355,15 +356,19 @@ abstract class Website {
     protected void clickOnInputNameContaining(String name) throws ElementNotAvailableException {
         log.debug("clicking input...")
         def clicked = false
+        def tmpPage = null
         def elements = []
         currentPage.getElementsByTagName('input').each() { child ->
+            elements << child.asXml()
             if (!clicked && child.nameAttribute.contains(name))  {
-                currentPage = child.click()
+                tmpPage = child.click()
                 clicked = true
             }
         }
         if (!clicked) {
             throw new ElementNotAvailableException("Input element containing '${content}' not found.", elements)
+        } else {
+            currentPage = tmpPage
         }
         log.debug("...clicked")
     }
@@ -532,64 +537,70 @@ abstract class Website {
             throw new ElementNotAvailableException("Element with id '${id}' not found.", enf, elementEntries)
         }
     }
-    
+
+    /**
+     * Returns the element referenced by this XPath expression.
+     * @param path XPath expression of the element.
+     * @return The element referenced by the given XPath.
+     * @throws ElementNotAvailableException If the element is not available.
+     */
     protected HtmlElement getElementByXPath(String path) throws ElementNotAvailableException {
         try {
             return currentPage.getFirstByXPath(path)
         } catch (Throwable t) {
-            def i = 0
-            def file = new File("${folder}currentPage${i++}.html")
-            while (file.exists()) {
-                file = new File("${folder}currentPage${i++}.html")
-            }
-            log.fatal(t)
-            log.fatal("Writing file to ${file.name}")
-            currentPage.save(file)
-            log.fatal("Exiting...")
-            System.exit(1)
+            def elementEntries = []
+            //TODO determine possible elements
+            throw new ElementNotAvailableException("Element with id '${id}' not found.", enf, elementEntries)
         }
     }
 
-    protected HtmlElement[] getElementsByXPath(String path){
+    /**
+     * Returns all elements referenced by this XPath expression.
+     * @param path XPath expression of the elements.
+     * @return The elements referenced by the given XPath.
+     * @throws ElementNotAvailableException If the element is not available.
+     */
+    protected HtmlElement[] getElementsByXPath(String path) throws ElementNotAvailableException {
         try {
-            return currentPage.getByXPath(path)
+            return currentPage.getByXPath(path) as HtmlElement[]
         } catch (Throwable t) {
-            def i = 0
-            def file = new File("${folder}currentPage${i++}.html")
-            while (file.exists()) {
-                file = new File("${folder}currentPage${i++}.html")
-            }
-            log.fatal(t)
-            log.fatal("Writing file to ${file.name}")
-            currentPage.save(file)
-            log.fatal("Exiting...")
-            System.exit(1)
+            def elementEntries = []
+            //TODO determine possible elements
+            throw new ElementNotAvailableException("Element with id '${id}' not found.", enf, elementEntries)
         }
     }
 
-    protected void getElementsByXPath(String path, Closure closure){
+    /**
+     * Applies a closure to each element determined by an XPath expression.
+     * @param path XPath expression of the elements.
+     * @param closure Closure to be executed.
+     * @throws ElementNotAvailableException If the element is not available.
+     */
+    protected void getElementsByXPath(String path, Closure closure) throws ElementNotAvailableException {
         getElementByXPath(path).each { element ->
             closure.call(element)
         }
     }
 
-    protected HtmlAnchor getAnchorByHref(String href) {
+    /**
+     * Returns anchor element determined by href attribute.
+     * @param href Href attribute that determines the anchor.
+     * @return Anchor element determined by href attribute.
+     * @throws ElementNotAvailableException If the element is not available.
+     */
+    protected HtmlAnchor getAnchorByHref(String href) throws ElementNotAvailableException {
         try {
             return currentPage.getAnchorByHref(href)
-        } catch (Throwable t) {
-            def i = 0
-            def file = new File("${folder}currentPage${i++}.html")
-            while (file.exists()) {
-                file = new File("${folder}currentPage${i++}.html")
-            }
-            log.fatal(t)
-            log.fatal("Writing file to ${file.name}")
-            currentPage.save(file)
-            log.fatal("Exiting...")
-            System.exit(1)
+        } catch (ElementNotFoundException enf) {
+            def elementEntries = []
+            //TODO determine possible elements
+            throw new ElementNotAvailableException("Anchor element with href '${href}' not found.", enf, elementEntries)
         }
     }
 
+    /**
+     * Writes current website to local folder.
+     */
     protected void save() {
         def i = 0
         def file = new File("${folder}currentPage${i++}.html")
@@ -601,14 +612,35 @@ abstract class Website {
         log.info("Exiting...")
     }
 
+    /**
+     * Sets availability of JavaScript function.
+     * @param enabled
+     */
     protected void setJsEnabled(boolean enabled) {
         client.setJavaScriptEnabled(enabled)
     }
 
+    /**
+     * Type of document that indicates the type of the returned document.
+     */
     public enum DocType {
         HTML, XML, TEXT, PDF
     }
 
+    /**
+     * Logs the current page name, if a page determine closure is set.
+     */
+    private void logPageName() {
+        if (determinePageName) {
+            def pageName = determinePageName.call(currentPage)
+            log.info("Now on page: ${pageName}")
+        }
+    }
+
+    /**
+     * Method to be implemented for each website. This method contains the extraction logic.
+     * @param closure
+     */
     abstract void eachDocument(Closure closure)
 
 }

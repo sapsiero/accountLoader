@@ -39,6 +39,7 @@ class ContentWriter {
                     extension = "unknown"
                     break
             }
+            //noinspection GroovyAssignabilityCheck
             save(docAttr.name, extension, doc)
         }
     }

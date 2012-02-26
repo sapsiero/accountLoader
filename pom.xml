@@ -152,6 +152,8 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.xml</include>
+                    <include>**/*.csv</include>
+                    <include>**/*.html</include>
                 </includes>
             </resource>
             <resource>
