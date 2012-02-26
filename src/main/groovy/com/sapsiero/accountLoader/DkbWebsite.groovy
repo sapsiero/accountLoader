@@ -18,7 +18,7 @@ class DkbWebsite extends Website {
     }
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         resolve("https://banking.dkb.de/dkb/")
 
         consoleInputByName( "Account Nbr:", "j_username")
@@ -73,9 +73,11 @@ class DkbWebsite extends Website {
                 }
             }
         }
+    }
 
+    @Override
+    void processLogout() {
         jsEnabled = false
-
         clickOnAnchor('/dkb/-?$part=Postbox.login-status&$event=logout')
     }
 }

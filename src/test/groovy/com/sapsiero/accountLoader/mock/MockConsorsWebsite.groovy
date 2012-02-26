@@ -81,10 +81,15 @@ class MockConsorsWebsite extends Website {
     def showCallMoney = false
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         if (showDebit)
             closure.call(Website.DocType.TEXT, [type: 'debit', account: 'ABCDEFGHI'], content1)
         if (showCallMoney)
             closure.call(Website.DocType.TEXT, [type: 'callmoney', account: 'DEFGHIJKL'], content2)
+    }
+
+    @Override
+    void processLogout() {
+
     }
 }

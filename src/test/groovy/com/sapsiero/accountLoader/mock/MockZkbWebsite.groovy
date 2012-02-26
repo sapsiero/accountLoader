@@ -17,8 +17,13 @@ class MockZkbWebsite extends MockWebsite {
     }
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         closure.call(Website.DocType.TEXT, [type: 'debit', account: 'ABCDEFGHI'], getContent("mockZkb.csv"))
+    }
+
+    @Override
+    void processLogout() {
+
     }
     
     String getResult(){

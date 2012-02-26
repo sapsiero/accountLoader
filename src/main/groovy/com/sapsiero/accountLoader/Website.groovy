@@ -13,6 +13,7 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException
 import com.sapsiero.accountLoader.exception.StepExecutionException
 import com.sapsiero.accountLoader.exception.ValueNotAvailableException
 import com.sapsiero.accountLoader.exception.ElementNotAvailableException
+import groovyjarjarasm.asm.tree.TryCatchBlockNode
 
 /**
  * Created by IntelliJ IDEA.
@@ -638,9 +639,44 @@ abstract class Website {
     }
 
     /**
-     * Method to be implemented for each website. This method contains the extraction logic.
-     * @param closure
+     * Method that orchestrates the process logic and logout logic.
+     * @param closure Closure to be executed on each file.
      */
-    abstract void eachDocument(Closure closure)
+    final void eachDocument(Closure closure) {
+        try {
+            processWebsite(closure)
+        } catch (ElementNotAvailableException enaex) {
+            log.error("Could not process website.", enaex)
+            log.error(enaex.message)
+            log.error("Try following alternatives:")
+            enaex.availableValues.each{ it ->
+                log.error("\t${it}")
+            }
+            log.error("---")
+            save()
+        } catch (Exception ex) {
+            log.error("Could not process website.", enaex)
+            log.error(enaex.message)
+            save()
+        } finally {
+            try {
+                processLogout()
+            } catch (Exception ex) {
+                log.warn("Could not log out.", ex)
+                save()
+            }
+        }
+    }
+
+    /**
+     * Method to be implemented for each website. This method contains the extraction logic.
+     * @param closure Closure to be executed on each file.
+     */
+    abstract void processWebsite(Closure closure)
+
+    /**
+     * Method to be implemented for each website. This method contains the logout logic.
+     */
+    abstract void processLogout()
 
 }

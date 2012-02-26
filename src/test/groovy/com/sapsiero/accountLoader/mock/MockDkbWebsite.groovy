@@ -191,7 +191,7 @@ class MockDkbWebsite extends Website {
     def showCreditWithInternationalError = false
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         if (showDebit)
             closure.call(Website.DocType.TEXT, [type: 'debit', account: 'ABCDEFGHI'], content1)
         if (showCredit)
@@ -200,5 +200,10 @@ class MockDkbWebsite extends Website {
             closure.call(Website.DocType.TEXT, [type: 'credit', account: 'DEFGHIJKL'], content3)
         if (showCreditWithInternationalError)
             closure.call(Website.DocType.TEXT, [type: 'credit', account: 'DEFGHIJKL'], content4)
+    }
+
+    @Override
+    void processLogout() {
+
     }
 }

@@ -18,7 +18,7 @@ class ConsorsWebsite extends Website {
     }
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         resolve("https://www.cortalconsors.de/euroWebDe/-")
 
         clickOnId("login-button-nojs")
@@ -64,7 +64,10 @@ class ConsorsWebsite extends Website {
             def pdfDocument = documentLink.getEnclosingElement('a').click()
             closure.call(Website.DocType.PDF, [name: title], pdfDocument.inputStream)
         }
+    }
 
+    @Override
+    void processLogout() {
         clickOnName('$$event_logout')
     }
 }

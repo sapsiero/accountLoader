@@ -17,8 +17,13 @@ class MockCommerzbankWebsite extends MockWebsite {
     }
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         closure.call(Website.DocType.XML, [type: 'debit', account: 'ABCDEFGHI'], getContent("mockCommerzbank.html"))
+    }
+
+    @Override
+    void processLogout() {
+
     }
     
     String getResult(){

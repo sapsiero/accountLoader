@@ -23,7 +23,7 @@ class ZkbWebsite extends Website {
     }
 
     @Override
-    void eachDocument(Closure closure) {
+    void processWebsite(Closure closure) {
         resolve("https://onba.zkb.ch")
 
         consoleInputByName( "Account Nbr:", "vertrag")
@@ -84,7 +84,10 @@ class ZkbWebsite extends Website {
 
             }
         }
+    }
 
+    @Override
+    void processLogout(){
         clickOnXPath('/html/body/div/div[2]/div/strong/a')
     }
 }
