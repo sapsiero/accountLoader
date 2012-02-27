@@ -11,19 +11,31 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
  */
 class DkbWebsite extends Website {
 
-    public DkbWebsite(String errorFolder) {
-        super(BrowserVersion.FIREFOX_3, errorFolder)
+    public DkbWebsite(Properties properties, String errorFolder) {
+        super(BrowserVersion.FIREFOX_3, errorFolder, properties)
         init()
         client.javaScriptEnabled = false
+
+        determinePageName = { page ->
+            def title = page.querySelector('td[class~="caption"]/a[name~="top"]')?.asText()?.trim()
+
+            if (!title) {
+                title = page.querySelector('title').asText().trim()
+            }
+
+            title
+        }
     }
 
     @Override
     void processWebsite(Closure closure) {
         resolve("https://banking.dkb.de/dkb/")
 
-        consoleInputByName( "Account Nbr:", "j_username")
-        passwordInputByName("Password   :", "j_password")
-        clickOnId("buttonlogin")
+        while (isPage('Herzlich willkommen')) {
+            consoleInputByName( "Account Nbr:", "j_username")
+            passwordInputByName("Password   :", "j_password")
+            clickOnId("buttonlogin")
+        }
 
         clickOnAnchor("/dkb/-?\$part=DkbTransactionBanking.index.menu&node=2&tree=menu&treeAction=selectNode")
 

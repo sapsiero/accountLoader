@@ -13,7 +13,7 @@ import com.sapsiero.accountLoader.Website
 class MockConsorsWebsite extends Website {
 
     public MockConsorsWebsite() {
-        super(BrowserVersion.INTERNET_EXPLORER_8, '')
+        super(BrowserVersion.INTERNET_EXPLORER_8, '', new Properties())
     }
 
     public def result2 = """<accounts banknumber='CSDBDE71'>

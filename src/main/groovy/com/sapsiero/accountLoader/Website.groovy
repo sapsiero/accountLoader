@@ -50,14 +50,20 @@ abstract class Website {
     protected Closure determinePageName
 
     /**
+     * Configuration parameter
+     */
+    private Properties properties
+
+    /**
      * Standard constructor.
      * @param version BrowserVersion of the request
      * @param targetFolder Folder to store the data in
      */
-    protected Website(BrowserVersion version, String targetFolder) {
+    protected Website(BrowserVersion version, String targetFolder, Properties props) {
         log.debug("creating webclient...")
         this.folder = targetFolder
         this.version = version
+        this.properties = props
         log.debug("...webclient created.")
     }
 
@@ -92,17 +98,18 @@ abstract class Website {
      * @throws StepExecutionException exception, if url could not be resolved.
      */
     protected void resolve(String url) throws StepExecutionException {
-        log.debug("resolving url ${url}...")
+        log.debug("resolving url '${url}'...")
         try {
             currentPage = client.getPage(url)
-            if (currentPage)
-                log.info("Page loaded...")
-            else {
-                log.fatal("Url ${url} did not return a valid page.")
+            if (currentPage) {
+                log.info("...page loaded")
+                logPageName()
+            } else {
+                log.fatal("Url '${url}' did not return a valid page.")
                 throw new StepExecutionException("Url ${url} did not return a valid page.")
             }
         } catch (UnknownHostException uhe) {
-            log.fatal("Url ${url} could not be resolved.")
+            log.fatal("Url '${url}' could not be resolved.")
             throw new StepExecutionException("Url ${url} could not be resolved.", uhe)
         }
         log.debug("...resolved")
@@ -264,6 +271,7 @@ abstract class Website {
     protected void clickOnId(String id) {
         log.debug("clicking id...")
         currentPage = getElementById(id).click()
+        logPageName()
         log.debug("...clicked")
     }
 
@@ -283,6 +291,7 @@ abstract class Website {
             currentPage = checkPage
             closure.call()
             currentPage = tmpPage
+            logPageName()
             null
         } else {
             log.debug("...clicked without finding new HTMLPage")
@@ -298,6 +307,7 @@ abstract class Website {
     protected void clickOnName(String name) {
         log.debug("clicking anchor...")
         currentPage = getElementByName(name).click()
+        logPageName()
         log.debug("...clicked")
     }
 
@@ -309,6 +319,7 @@ abstract class Website {
     protected void clickOnAnchor(String href) {
         log.debug("clicking anchor...")
         currentPage = getAnchorByHref(href).click()
+        logPageName()
         log.debug("...clicked")
     }
 
@@ -320,6 +331,7 @@ abstract class Website {
     protected void clickOnXPath(String path) {
         log.debug("clicking xpath...")
         currentPage = getElementByXPath(path).click()
+        logPageName()
         log.debug("...clicked")
     }
 
@@ -344,6 +356,7 @@ abstract class Website {
             throw new ElementNotAvailableException("Anchor containing '${content}' not found.", elements)
         } else {
             currentPage = tmpPage
+            logPageName()
         }
         log.debug("...clicked")
     }
@@ -370,6 +383,7 @@ abstract class Website {
             throw new ElementNotAvailableException("Input element containing '${content}' not found.", elements)
         } else {
             currentPage = tmpPage
+            logPageName()
         }
         log.debug("...clicked")
     }
@@ -603,14 +617,17 @@ abstract class Website {
      * Writes current website to local folder.
      */
     protected void save() {
-        def i = 0
-        def file = new File("${folder}currentPage${i++}.html")
-        while (file.exists()) {
-            file = new File("${folder}currentPage${i++}.html")
+        try {
+            def i = 0
+            def file = new File("${folder}currentPage${i++}.html")
+            while (file.exists()) {
+                file = new File("${folder}currentPage${i++}.html")
+            }
+            log.info("Writing file to ${file.name}")
+            currentPage.save(file)
+        } catch (Exception ex) {
+            log.error("Could not save file.", ex)
         }
-        log.info("Writing file to ${file.name}")
-        currentPage.save(file)
-        log.info("Exiting...")
     }
 
     /**
@@ -632,6 +649,9 @@ abstract class Website {
      * Logs the current page name, if a page determine closure is set.
      */
     private void logPageName() {
+        if (properties.getProperty("debug.save_on_each_step", "false").equals("true")) {
+            save()
+        }
         if (determinePageName) {
             def pageName = determinePageName.call(currentPage)
             log.info("Now on page: ${pageName}")
@@ -654,10 +674,12 @@ abstract class Website {
             }
             log.error("---")
             save()
+            throw enaex
         } catch (Exception ex) {
-            log.error("Could not process website.", enaex)
-            log.error(enaex.message)
+            log.error("Could not process website.", ex)
+            log.error(ex.message)
             save()
+            throw ex
         } finally {
             try {
                 processLogout()

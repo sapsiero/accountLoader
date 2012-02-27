@@ -13,7 +13,7 @@ import com.sapsiero.accountLoader.Website
 class MockDkbWebsite extends Website {
 
     public MockDkbWebsite() {
-        super(BrowserVersion.FIREFOX_3_6, '')
+        super(BrowserVersion.FIREFOX_3_6, '', new Properties())
     }
 
     public def result1 = """<accounts banknumber='BYLADEM1001'>

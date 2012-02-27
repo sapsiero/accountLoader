@@ -12,19 +12,29 @@ import com.sapsiero.accountLoader.exception.ElementNotAvailableException
  */
 class CommerzbankWebsite extends Website {
 
-    public CommerzbankWebsite(String errorFolder) {
-        super(BrowserVersion.FIREFOX_3, errorFolder)
+    public CommerzbankWebsite(Properties properties, String errorFolder) {
+        super(BrowserVersion.FIREFOX_3, errorFolder, properties)
         init()
         client.javaScriptEnabled = false
+
+        determinePageName = { page ->
+            def title = page.querySelector('span[class~="subhead"]')?.asText()?.trim()
+            if (!title) {
+                title = page.querySelector('span[class~="tablehead2"]')?.asText().trim()
+            }
+            title
+        }
     }
 
     @Override
     void processWebsite(Closure closure) {
         resolve("https://www.commerzbanking.de/P-Portal1/XML/ifilportal/pgf.html?Tab=1")
 
-        consoleInputByName( "Account Nbr:", 'PltLogin_8_txtTeilnehmernummer')
-        passwordInputByName("Password   :", 'PltLogin_8_txtPIN')
-        clickOnName('PltLogin_8_btnLogin')
+        while(isPage('Anmelden')) {
+            consoleInputByName( "Account Nbr:", 'PltLogin_8_txtTeilnehmernummer')
+            passwordInputByName("Password   :", 'PltLogin_8_txtPIN')
+            clickOnName('PltLogin_8_btnLogin')
+        }
 
         clickOnAnchorContaining("Kontoumsätze")
 

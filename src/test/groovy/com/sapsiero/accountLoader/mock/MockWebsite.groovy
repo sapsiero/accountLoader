@@ -12,8 +12,9 @@ import com.sapsiero.accountLoader.Website
 abstract class MockWebsite extends Website {
 
 
-    protected MockWebsite(com.gargoylesoftware.htmlunit.BrowserVersion version, String targetFolder) {
-        super(version, targetFolder)
+    protected MockWebsite(com.gargoylesoftware.htmlunit.BrowserVersion version, String targetFolder,
+                          Properties properties) {
+        super(version, targetFolder, new Properties())
     }
 
     protected String getContent(String filename) {

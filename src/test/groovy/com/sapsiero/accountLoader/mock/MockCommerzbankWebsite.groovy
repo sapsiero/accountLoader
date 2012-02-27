@@ -13,7 +13,7 @@ import com.sapsiero.accountLoader.Website
 class MockCommerzbankWebsite extends MockWebsite {
 
     public MockCommerzbankWebsite() {
-        super(BrowserVersion.FIREFOX_3_6, '')
+        super(BrowserVersion.FIREFOX_3_6, '', new Properties())
     }
 
     @Override

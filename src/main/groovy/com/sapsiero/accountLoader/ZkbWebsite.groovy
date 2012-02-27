@@ -11,14 +11,15 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
  */
 class ZkbWebsite extends Website {
 
-    public ZkbWebsite(String errorFolder) {
-        super(BrowserVersion.FIREFOX_3, errorFolder)
+    public ZkbWebsite(Properties properties, String errorFolder) {
+        super(BrowserVersion.FIREFOX_3, errorFolder, properties)
         init()
         client.javaScriptEnabled = false
         
         determinePageName = { page ->
-            def title = page.querySelector('div[class~="pageTitle"]')
-            title.asText().trim()
+            def title = page.querySelector('div[class~="pageTitle"]').asText().trim()
+            def errors = page.querySelector('div[class~="globalErrorLine"]').collect { text -> text.asText().trim() }.join(" - ")
+            "${title} (${errors})"
         }
     }
 
@@ -30,14 +31,21 @@ class ZkbWebsite extends Website {
         passwordInputByName("Password   :", "passwort")
         clickOnName("SubmitURL|_command=exec|")
         
-        if (isPage("Login ZKB Onlinebank")) {
-            //TODO wrong password
+        while (isPage("Login ZKB Onlinebank (Anmeldung fehlerhaft. Bitte überprüfen Sie Ihre Eingaben.)")) {
+            consoleInputByName( "Account Nbr:", "vertrag")
+            passwordInputByName("Password   :", "passwort")
+            clickOnName("SubmitURL|_command=exec|")
         }
 
         passwordInputByName("MTAN       :", "logon2.tan")
         clickOnInputNameContaining("localCommand=logon2")
+        
+        while (isPage('Login ZKB Onlinebank (Die eingegebene TAN ist falsch. Bitte überprüfen Sie Ihre Eingabe.)')) {
+            passwordInputByName("MTAN       :", "logon2.tan")
+            clickOnInputNameContaining("localCommand=logon2")
+        }
 
-        if (isPage("Vertrag bereits angemeldet")) {
+        if (isPage("Vertrag bereits angemeldet ()")) {
             log.info("Accepting warning.")
             clickOnInputNameContaining("button=weiter")
         } else {
@@ -78,7 +86,7 @@ class ZkbWebsite extends Website {
                     if (document) {
                         closure.call(Website.DocType.PDF, [name: filename], document.inputStream)
                     } else {
-                        println "Nothing returned"
+                        log.warn("Nothing returned")
                     }
                 }
 

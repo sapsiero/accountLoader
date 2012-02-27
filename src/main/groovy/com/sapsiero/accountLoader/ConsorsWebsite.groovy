@@ -11,10 +11,20 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
  */
 class ConsorsWebsite extends Website {
 
-    public ConsorsWebsite(String errorFolder) {
-        super(BrowserVersion.INTERNET_EXPLORER_8, errorFolder)
+    public ConsorsWebsite(Properties properties, String errorFolder) {
+        super(BrowserVersion.INTERNET_EXPLORER_8, errorFolder, properties)
         init()
         client.javaScriptEnabled = false
+
+        determinePageName = { page ->
+            def title = page.querySelector('div[class~="page-headline"]/div[class~="page-headline"]/h1')?.asText()?.trim()
+            
+            if (!title) {
+                title = page.querySelector('title').asText().trim()
+            }
+            
+            title
+        }
     }
 
     @Override
@@ -23,16 +33,16 @@ class ConsorsWebsite extends Website {
 
         clickOnId("login-button-nojs")
 
-        consoleInputByName( "Account Nbr:", 'userId')
-        passwordInputByName("Password   :", 'nip')
-        clickOnName('$$event_login')
+        while (isPage('Cortal Consors - Tagesgeld - Aktien - Fonds und Vermögensberatung - Cortal Consors')) {
+            consoleInputByName( "Account Nbr:", 'userId')
+            passwordInputByName("Password   :", 'nip')
+            clickOnName('$$event_login')
+        }
 
         clickOnAnchorContaining("Verrechnungskonto")
 
         eachElementByXPath("/html/body/div[2]/div[6]/div[2]/div[2]/form/div/ul/li/a") { anchor ->
             def accountText = anchor.asText().trim()
-
-            println accountText
 
             clickOnAnchor(anchor.hrefAttribute)
 

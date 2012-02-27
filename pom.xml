@@ -154,6 +154,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.csv</include>
                     <include>**/*.html</include>
+                    <include>**/*.properties</include>
                 </includes>
             </resource>
             <resource>
